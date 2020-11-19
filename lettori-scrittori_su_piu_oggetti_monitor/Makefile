@@ -11,5 +11,4 @@ main.o: main.c header.h
 
 clean: 
 	rm -f *.o
-	rm -f *~
 	rm -f ./start
