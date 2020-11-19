@@ -2,18 +2,20 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
 #include "prodcons.h"
 
 
 void * produttore_alta_priorita(void * p)
-{
+{	
+	PriorityProdCons * pc = ((PriorityProdCons*) p);
 
 	int i;
 	    
     
 	for(i=0; i<3; i++) {
 
-		/* TBD: Chiamare il metodo di produzione alta priorità */
+		produci_alta_prio(pc);
 
 		sleep(2);
 	}
@@ -24,13 +26,14 @@ void * produttore_alta_priorita(void * p)
 
 void * produttore_bassa_priorita(void * p)
 {
-    
+    PriorityProdCons * pc = ((PriorityProdCons*) p);
+
 	int i;
         
     
 	for(i=0; i<3; i++) {
         
-		/* TBD: Chiamare il metodo di produzione bassa priorità */
+		produci_bassa_prio(pc);
 
 		sleep(1);
 	}
@@ -41,14 +44,15 @@ void * produttore_bassa_priorita(void * p)
 
 void * consumatore(void * p)
 {
-    
+	PriorityProdCons * pc = ((PriorityProdCons*) p);
+
 	int i;
 
     
     
 	for(i=0; i<12; i++) {
         
-		/* TBD: Chiamare il metodo consuma() */
+		consuma(pc);
         
 		sleep(1);
 	}
@@ -71,23 +75,49 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 
     
-	PriorityProdCons * prodcons = /* TBD: Allocare un oggetto monitor */;
+	PriorityProdCons * prodcons = (PriorityProdCons *)malloc(sizeof(PriorityProdCons));
 
     
     
-	/* TBD: Inizializzare l'oggetto monitor */
+	inizializza_prod_cons(prodcons);
 
+	pthread_attr_init(&attr);
+	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
 
-	/* TBD: Creare 3 thread produttore bassa priorità, 
-	 *      1 thread produttore alta priorità,
-	 *      e 1 thread consumatore.
-	 */
+	for(int i=0; i<3; i++){
+		rc  = pthread_create(&threads[i],&attr,produttore_bassa_priorita,(void *)prodcons);
+		if(rc){
+		printf("errore prduttore bassa priorità %d \n",rc);
+		exit(-1);
+	}
 	
+
+	rc = pthread_create(&threads[3],&attr,consumatore,(void *)prodcons);
+	if(rc){
+		printf("errore consumatore\n");
+		exit(-1);
+	}
+
+	rc = pthread_create(&threads[4],&attr,produttore_alta_priorita,(void *)prodcons);
+	if(rc){
+		printf("errore produttore alta priorità\n");
+		exit(-1);
+	}
+	
+	
+
+	}
     
-	/* TBD: Effettuare la join con i thread */
+	for(int i=0; i<5; i++){
+		pthread_join(threads[i],NULL);
+	}
 
 
 
-	/* TBD: Richiamare il distrutture dell'oggetto monitor */
+	rimuovi_prod_cons(prodcons);
+
+	return 0;
 }
+
+
 

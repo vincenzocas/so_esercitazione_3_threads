@@ -1,5 +1,5 @@
 prodcons: prodcons.o main.o
-	gcc -lpthread -o prodcons prodcons.o main.o
+	gcc -pthread -o prodcons prodcons.o main.o
 
 prodcons.o: prodcons.c prodcons.h
 	gcc -c -o prodcons.o prodcons.c

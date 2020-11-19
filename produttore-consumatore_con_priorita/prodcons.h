@@ -8,6 +8,17 @@
 typedef struct{
 
 	int buffer[DIM];
+	int coda;
+	int testa;
+	int num_prod_high;
+	int num_totale;
+	pthread_cond_t prod_high;
+	pthread_cond_t prod_low;
+
+	pthread_cond_t cons;
+
+	pthread_mutex_t mutex;
+
 
 	/* TBD: Aggiungere ulteriori variabili per la sincronizzazione */
     

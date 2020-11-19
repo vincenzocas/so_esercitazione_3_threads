@@ -1,5 +1,5 @@
 stack: stack.o stack_utente.o
-	gcc -lpthread -o stack stack.o stack_utente.o
+	gcc -pthread -o stack stack.o stack_utente.o
 
 stack.o: stack.c stack.h
 	gcc -c -o stack.o stack.c

@@ -10,7 +10,11 @@ typedef struct Stack {
 	int dim;		// dimensione dello Stack
 	int testa;
 
-	/* TBD: Aggiungere variabili per la sincronizzazione */
+	pthread_cond_t	pop;
+	pthread_cond_t push;
+
+	pthread_mutex_t mutex;
+
 
 } Stack;
 

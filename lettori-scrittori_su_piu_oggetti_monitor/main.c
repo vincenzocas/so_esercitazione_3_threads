@@ -29,7 +29,8 @@ void * Viaggiatori (void * p){
 }
 
 int main() {
-	
+
+
 	pthread_attr_t attr;
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_JOINABLE);
@@ -43,7 +44,14 @@ int main() {
 	
 	int i;
 
-	/* TBD: Allocare 4 istanze di monitor, e attivarle con inizializza() */
+	
+	for(i=0;i<4;i++){
+		m[i] = (struct monitor*) malloc(sizeof(struct monitor));
+		inizializza(m[i]);
+	}
+	
+
+
 
 	//assegno un id ad ogni treno
 	m[0]->id_treno=1;
@@ -53,27 +61,38 @@ int main() {
 
 	//creazione dei 4 threads capitreno
 	for(i=0;i<4;i++){
-		pthread_create(&capo[i],NULL,Capotreno, (void*)  m[i]);
+		int	rc = pthread_create(&capo[i],&attr,Capotreno, (void*)  m[i]);
+		if(rc){
+			printf("errore thread capo %d \n",rc);
+		}
+	} 
+
+	
+
+
+	for(i=0;i<10;i++){
+		int j = rand() % 4;
+		int	rc = pthread_create(&viagg[i],&attr,Viaggiatori, (void*)  m[j]);
+		if(rc){
+			printf("errore thread viaggiatore %d \n",rc);
+		}
+	} 
+
+
+	for(i=0;i<4;i++){
+		pthread_join(capo[i],NULL);
+	
+	} 
+
+	for(i=0;i<10;i++){
+		pthread_join(viagg[i],NULL);
+	
+	} 
+
+	for(int i=0; i<4; i++){
+		rimuovi(m[i]);
+		free(m[i]);
 	}
-
-	/* TBD: Avviare 4 thread, facendogli eseguire la funzione Capotreno(),
-	 * 	    e passando ad ognuno una istanza di monitor diversa m[i] */
-
-
-	/* TBD: Avviare 10 thread, facendogli eseguire la funzione Viaggiatori(),
-	 *      e passando ad ognuno una istanza di monitor diversa, da scegliere
-	 *      a caso con "rand() % 4"
-	 */
-
-
-	/* TBD: Effettuare la join con i thread "Capotreno" */
-
-	/* TBD: Effettuare la join con i thread "Viaggiatori" */
-
-	/* TBD: Disattivazione delle 4 istanze di monitor con rimuovi() */
-
-	/* TBD: Deallocazione delle 4 istanze di monitor con free() */
-
 
 	return 0;
 }	
